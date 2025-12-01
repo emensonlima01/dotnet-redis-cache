@@ -30,11 +30,6 @@ public static class PaymentsEndpoints
         [FromRoute] Guid id,
         [FromServices] CancelPaymentUseCase useCase)
     {
-        var response = await useCase.Handle(id);
-
-        if (response == null)
-            return Results.NotFound(new { message = "Payment not found" });
-
-        return Results.Ok(response);
+        return Results.Accepted();
     }
 }
