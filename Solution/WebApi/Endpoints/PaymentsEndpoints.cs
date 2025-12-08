@@ -14,6 +14,9 @@ public static class PaymentsEndpoints
         group.MapPost("/receive", ReceivePayment)
             .WithName("ReceivePayment");
 
+        group.MapGet("/{id}", GetPayment)
+            .WithName("GetPayment");
+
         group.MapPut("/{id}/cancel", CancelPayment)
             .WithName("CancelPayment");
     }
@@ -24,6 +27,18 @@ public static class PaymentsEndpoints
     {
         await useCase.Handle(request);
         return Results.Accepted();
+    }
+
+    private static async Task<IResult> GetPayment(
+        [FromRoute] Guid id,
+        [FromServices] GetPaymentUseCase useCase)
+    {
+        var payment = await useCase.Handle(id);
+
+        if (payment == null)
+            return Results.NotFound(new { message = "Payment not found" });
+
+        return Results.Ok(payment);
     }
 
     private static async Task<IResult> CancelPayment(

@@ -15,6 +15,7 @@ public static class ApplicationServiceCollectionExtensions
     private static IServiceCollection AddUseCases(this IServiceCollection services)
     {
         services.AddScoped<ReceivePaymentUseCase>();
+        services.AddScoped<GetPaymentUseCase>();
         services.AddScoped<CancelPaymentUseCase>();
 
         return services;
