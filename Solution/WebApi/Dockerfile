@@ -62,6 +62,6 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 # Set environment variables for optimization
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=true \
     DOTNET_EnableDiagnostics=0 \
-    ASPNETCORE_URLS=http://+:8080
+    ASPNETCORE_HTTP_PORTS=8080
 
 ENTRYPOINT ["dotnet", "WebApi.dll"]

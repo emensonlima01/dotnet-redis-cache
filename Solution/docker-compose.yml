@@ -1,21 +1,29 @@
 services:
   redis:
     image: redis:7-alpine
-    container_name: payment-redis
+    container_name: redis
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
     command: redis-server --appendonly yes
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
+      interval: 1s
+      timeout: 1s
       retries: 3
       start_period: 5s
     networks:
       - payment-network
-    restart: unless-stopped
+    restart: always
 
   webapi:
     build:
@@ -30,13 +38,21 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     networks:
       - payment-network
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 3s
+      interval: 1s
+      timeout: 1s
       retries: 3
       start_period: 10s
 

@@ -21,8 +21,6 @@ if (app.Environment.IsDevelopment())
         .ExcludeFromDescription();
 }
 
-app.UseHttpsRedirection();
-
 app.MapHealthChecks("/health");
 
 app.MapPaymentsEndpoints();
