@@ -1,5 +1,6 @@
 using Domain.Repositories;
 using Domain.Services;
+using Infrastructure.Configuration;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
@@ -22,11 +23,18 @@ public static class InfrastructureServiceCollectionExtensions
 
     private static IServiceCollection AddRedisCache(this IServiceCollection services, IConfiguration configuration)
     {
-        var redisConnection = configuration.GetConnectionString("Redis")
-            ?? throw new InvalidOperationException("Redis connection string not found");
+        services.Configure<RedisSettings>(configuration.GetSection(RedisSettings.SectionName));
 
         services.AddSingleton<IConnectionMultiplexer>(sp =>
-            ConnectionMultiplexer.Connect(redisConnection));
+        {
+            var redisSettings = configuration.GetSection(RedisSettings.SectionName).Get<RedisSettings>()
+                ?? throw new InvalidOperationException("Redis configuration not found");
+
+            if (string.IsNullOrWhiteSpace(redisSettings.ConnectionString))
+                throw new InvalidOperationException("Redis connection string not found");
+
+            return ConnectionMultiplexer.Connect(redisSettings.ConnectionString);
+        });
 
         services.AddSingleton<ICacheService, RedisCacheService>();
 
